@@ -1,0 +1,156 @@
+SET A
+
+Q1)
+
+from flask import Flask
+app = Flask(__name__)
+@app.route('/')
+def hello_world():
+        return'<h1>Welcom to Nowrosjee Wadia College Pune!<h1>'
+if __name__=="__main__":
+    app.run()
+
+
+
+Q2)
+
+from flask import Flask, render_template, request, abort
+
+app = Flask(__name__)
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+    
+        # Check for empty fields
+        if not username or not password:
+            abort(400, 'Username and password are required')
+
+        # Check password length
+        if len(password) < 8:
+            abort(400, 'Password must be at least 8 characters long')
+
+        # Check for valid username characters
+        if not username.isalnum():
+            abort(400, 'Username can only contain letters and numbers')
+
+        # Add forbidden condition (example: forbidding a specific username)
+        if username.lower() == 'admin':
+            abort(403)
+
+        return 'Form submitted successfully!'
+    
+    return render_template('register.html')
+
+
+if __name__ == '__main__':
+    app.run(host='localhost', port=5003)
+
+
+register.html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Form</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 300px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 10px;
+        }
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button[type="submit"] {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color:#0E4D92;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registeration Form</h1>
+        <form method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username">
+	<br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+	<br><br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>
+
+
+
+
+-------------------------------------------------------------
+
+SET B
+
+Q1)
+
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return render_template('Q1.html')
+
+if __name__ == "__main__":
+    app.run()
+
+Q1.html
+tanazza sajid modi
+
+
+Q2)
+
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/table/<int:n>')
+def print_table(n):
+    table = ''
+    for i in range(1, 11):
+        table += f'{n} x {i} = {n * i}<br>'
+    return table
+
+if __name__ == '__main__':
+    app.run(host='localhost', port=5005)

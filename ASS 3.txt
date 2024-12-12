@@ -1,0 +1,416 @@
+Q1
+
+html
+
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { ReactiveFormsModule } from '@angular/forms';
+
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+---------
+css
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+-------------
+component
+
+import { Component } from '@angular/core';
+
+interface Student {
+  name: string;
+  age: number;
+  grade: string;
+}
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+ title = 'Student Details';
+  students: Student[] = [
+    { name: 'Alice', age: 20, grade: 'A' },
+    { name: 'Bob', age: 21, grade: 'B' },
+    { name: 'Charlie', age: 22, grade: 'C' },
+    { name: 'David', age: 23, grade: 'A' },
+    { name: 'Eva', age: 24, grade: 'B' },
+    { name: 'Frank', age: 25, grade: 'C' },
+    { name: 'Grace', age: 26, grade: 'A' },
+    { name: 'Hank', age: 27, grade: 'B' },
+    { name: 'Ivy', age: 28, grade: 'C' },
+    { name: 'Jack', age: 29, grade: 'A' },
+    { name: 'Kara', age: 30, grade: 'B' },
+    { name: 'Liam', age: 31, grade: 'C' }
+  ];
+
+  // Method to get only the first 10 students
+  getDisplayedStudents(): Student[] {
+    return this.students.slice(0, 10);
+  }
+}
+--------------
+module
+
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+--------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+Q2
+
+html
+
+
+<div class="container">
+  <h1>Notepad Application</h1>
+
+  <div class="note-form">
+    <h2>New Note</h2>
+    <textarea [(ngModel)]="newNoteText" placeholder="Enter note here..." rows="4" cols="50"></textarea>
+    <div class="note-actions">
+      <button class="btn-add" (click)="addNote()">Add Note</button>
+    </div>
+    <p>Current Date & Time: {{ currentDateTime }}</p>
+  </div>
+
+  <div class="note-list">
+    <div *ngFor="let note of notes; let i = index" class="note">
+      <div class="note-header">
+        <span>Note {{i + 1}}</span>
+        <span>{{note.dateTime}}</span>
+      </div>
+      <div class="note-body">
+        <p>{{note.text}}</p>
+      </div>
+      <div class="note-actions">
+        <button class="btn-edit" (click)="editNote(i)">Edit</button>
+        <button class="btn-delete" (click)="deleteNote(i)">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+----------------
+
+css
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: lightblue;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.note-form {
+  margin-bottom: 20px;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.note-actions {
+  margin-top: 10px;
+}
+
+button {
+  padding: 8px 12px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-add {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.btn-edit {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.note-list {
+  margin-top: 20px;
+}
+
+.note {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fafafa;
+}
+
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+
+.note-body {
+  margin-top: 10px;
+}
+
+----------------
+
+component
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
+
+interface Note {
+  text: string;
+  dateTime: string;
+}
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent implements OnInit, OnDestroy {
+  notes: Note[] = [];
+  newNoteText: string = '';
+  currentDateTime: string = '';
+  private dateTimeSubscription: Subscription | undefined;
+
+  ngOnInit(): void {
+    this.updateDateTime();
+    this.dateTimeSubscription = interval(1000).subscribe(() => this.updateDateTime());
+  }
+
+  ngOnDestroy(): void {
+    if (this.dateTimeSubscription) {
+      this.dateTimeSubscription.unsubscribe();
+    }
+  }
+
+  updateDateTime(): void {
+    this.currentDateTime = new Date().toLocaleString();
+  }
+
+  addNote(): void {
+    if (this.newNoteText.trim()) {
+      this.notes.push({
+        text: this.newNoteText,
+        dateTime: new Date().toLocaleString()
+      });
+      this.newNoteText = '';
+    }
+  }
+
+  editNote(index: number): void {
+    const editedText = prompt('Edit your note:', this.notes[index].text);
+    if (editedText !== null) {
+      this.notes[index].text = editedText;
+    }
+  }
+
+  deleteNote(index: number): void {
+    if (confirm('Are you sure you want to delete this note?')) {
+      this.notes.splice(index, 1);
+    }
+  }
+}
+--------------------------
+
+module
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms'; // Import FormsModule
+
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [
+    AppComponent
+    
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule  // Add FormsModule to imports
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+----------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+
+EXTRA
+
+html
+<div class="container">
+  <h1>{{ title }}</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Grade</th>
+        <th>City</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let student of studentsInPune">
+        <td>{{ student.name }}</td>
+        <td>{{ student.age }}</td>
+        <td>{{ student.grade }}</td>
+        <td>{{ student.city }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<router-outlet></router-outlet>
+-----------------
+
+css
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+----------------
+
+component
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'Students Living in Pune';
+  students = [
+    { name: 'Tanazza Modi', age: 20, grade: 'A', city: 'Pune' },
+    { name: 'Madiha Modi', age: 22, grade: 'B', city: 'Mumbai' },
+    { name: 'Mohammad Lambe', age: 21, grade: 'A-', city: 'Pune' },
+    { name: 'Huma Mokashi', age: 23, grade: 'B+', city: 'Delhi' },
+    { name: 'Huda Sayed ', age: 20, grade: 'A', city: 'Pune' },
+    { name: 'Zaid Karigar', age: 22, grade: 'B-', city: 'Chennai' },
+    { name: 'Ibrahim Lokhande', age: 21, grade: 'A', city: 'Pune' },
+    { name: 'Mohammad Vindhani', age: 23, grade: 'C+', city: 'Pune' },
+    { name: 'Sumaiya Shaikh', age: 20, grade: 'B', city: 'Mumbai' },
+    { name: 'Nizam Bakshi', age: 22, grade: 'B+', city: 'Pune' }
+  ];
+
+  // Filter students based on city
+  get studentsInPune() {
+    return this.students.filter(student => student.city === 'Pune');
+  }
+
+  ngOnInit() {
+    // Any initialization logic can go here
+  }
+}
+----------------------
+
+module
+
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { ChildComponent } from './child/child.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    ChildComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule
+  ],
+  providers: [],
+  bootstrap: [],
+ 
+})
+export class AppModule {
+
+}
+
+
+
